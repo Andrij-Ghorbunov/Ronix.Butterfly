@@ -1,0 +1,330 @@
+﻿<UserControl
+    x:Class="Ronix.Butterfly.Wpf.Views.TrainingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Ronix.Framework.WpfToolkit.Converters;assembly=Ronix.Framework.WpfToolkit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Ronix.Butterfly.Wpf.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance local:TrainingVm}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    DataContextChanged="TrainingDataContextChanged"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+        <converters:InvertedBooleanConverter x:Key="InvertedBoolean" />
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="3"
+                    Padding="3"
+                    VerticalAlignment="Center"
+                    Command="{Binding BrowseNetwork}"
+                    Content="Browse neural network..." />
+                <TextBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3"
+                    VerticalAlignment="Center"
+                    IsEnabled="{Binding IsFolder, Converter={StaticResource InvertedBoolean}}"
+                    IsReadOnly="True"
+                    Text="{Binding NetworkPath}" />
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="OR" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="3"
+                        Padding="3"
+                        VerticalAlignment="Center"
+                        Command="{Binding BrowseFolder}"
+                        Content="Browse folder..." />
+                </Grid>
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="3"
+                    VerticalAlignment="Center"
+                    IsEnabled="{Binding IsFolder}"
+                    IsReadOnly="True"
+                    Text="{Binding NetworkFolderPath}" />
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Margin="3"
+                    Padding="3"
+                    VerticalAlignment="Center"
+                    Command="{Binding BrowseDataset}"
+                    Content="Browse dataset..." />
+                <TextBox
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="3"
+                    VerticalAlignment="Center"
+                    IsReadOnly="True"
+                    Text="{Binding DatasetPath}" />
+                <Button
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Margin="3"
+                    Padding="3"
+                    VerticalAlignment="Center"
+                    Command="{Binding Save}"
+                    Content="Save" />
+                <CheckBox
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="3"
+                    VerticalAlignment="Center"
+                    Content="Save after all iterations"
+                    IsChecked="{Binding IsAutoSave, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <local:DatasetInfoPanelView Grid.Row="1" DataContext="{Binding DatasetInfo}" />
+            <UniformGrid Grid.Row="2">
+                <Grid Visibility="{Binding IsArchitecture1, Converter={StaticResource BooleanToVisibility}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Margin="3"
+                        Text="Dataset converter options for architecture 38-1" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Multiplier for score:" />
+                    <TextBox
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="{Binding MultiplierForScore, Mode=TwoWay}" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Multiplier for development:" />
+                    <TextBox
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="{Binding MultiplierForDevelopment, Mode=TwoWay}" />
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Bonus for correct move:" />
+                    <TextBox
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="{Binding BonusForCorrectMove, Mode=TwoWay}" />
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Bonus for incorrect moves:" />
+                    <TextBox
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="{Binding BonusForIncorrectMove, Mode=TwoWay}" />
+                    <TextBlock
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Correction:" />
+                    <TextBox
+                        Grid.Row="5"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="{Binding Correction, Mode=TwoWay}" />
+                </Grid>
+                <Grid Visibility="{Binding IsArchitecture50, Converter={StaticResource BooleanToVisibility}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Margin="3"
+                        Text="Dataset converter options for architecture 38-50" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Value for correct move:" />
+                    <TextBox
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="{Binding ValueForCorrectMove, Mode=TwoWay}" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Value for incorrect moves:" />
+                    <TextBox
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        Text="{Binding ValueForIncorrectMove, Mode=TwoWay}" />
+                    <CheckBox
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Content="Value for illegal move:"
+                        IsChecked="{Binding HasValueForIllegalMove, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Margin="3"
+                        VerticalAlignment="Center"
+                        IsEnabled="{Binding HasValueForIllegalMove}"
+                        Text="{Binding ValueForIllegalMove, Mode=TwoWay}" />
+                </Grid>
+            </UniformGrid>
+            <local:TrainingSetupView Grid.Row="3" DataContext="{Binding WinningSetup}" />
+            <local:TrainingSetupView Grid.Row="4" DataContext="{Binding DrawSetup}" />
+            <local:TrainingSetupView Grid.Row="5" DataContext="{Binding LosingSetup}" />
+            <Grid Grid.Row="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="3"
+                    Padding="3"
+                    Command="{Binding Train}"
+                    Content="Train" />
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3"
+                    Padding="3"
+                    Command="{Binding Stop}"
+                    Content="Stop" />
+                <StackPanel
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="3"
+                    Orientation="Horizontal"
+                    Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibility}}">
+                    <TextBlock Text="Setup " />
+                    <TextBlock Text="{Binding CurrentSetup}" />
+                    <TextBlock Text=", iteration " />
+                    <TextBlock Text="{Binding IterationNumber}" />
+                    <TextBlock Text="/" />
+                    <TextBlock Text="{Binding IterationTotalNumber}" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="7">
+                <ProgressBar
+                    Margin="3"
+                    Maximum="1"
+                    Value="{Binding Progress}" />
+            </Grid>
+            <ScrollViewer
+                x:Name="LogListViewer"
+                Grid.Row="8"
+                MaxHeight="300"
+                Margin="3">
+                <ListView x:Name="LogList" ItemsSource="{Binding Log}" />
+            </ScrollViewer>
+            <Grid Grid.Row="9">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Grid.Column="0"
+                    Margin="3"
+                    Padding="3"
+                    Command="{Binding ClearLog}"
+                    Content="Clear log" />
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

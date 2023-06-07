@@ -1,0 +1,44 @@
+﻿<Window
+    x:Class="Ronix.Butterfly.Wpf.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Ronix.Butterfly.Wpf"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="clr-namespace:Ronix.Butterfly.Wpf.Views"
+    Title="Butterfly v1.1"
+    Width="800"
+    Height="600"
+    mc:Ignorable="d">
+    <Window.DataContext>
+        <local:MainVm />
+    </Window.DataContext>
+    <Grid>
+        <TabControl Margin="3">
+            <TabItem Header="Game">
+                <views:GameView DataContext="{Binding Game}" />
+            </TabItem>
+            <TabItem Header="Competition Rules">
+                <views:CompetitionRulesView DataContext="{Binding CompetitionRules}" />
+            </TabItem>
+            <TabItem Header="Evolution">
+                <views:EvolutionView DataContext="{Binding Evolution}" />
+            </TabItem>
+            <TabItem Header="Named Tournament">
+                <views:NamedTournamentView DataContext="{Binding NamedTournament}" />
+            </TabItem>
+            <TabItem Header="Editor">
+                <views:EditorView DataContext="{Binding Editor}" />
+            </TabItem>
+            <TabItem Header="Datasets">
+                <views:DatasetsView DataContext="{Binding Datasets}" />
+            </TabItem>
+            <TabItem Header="Training">
+                <views:TrainingView DataContext="{Binding Training}" />
+            </TabItem>
+            <TabItem Header="Noise">
+                <views:NoiseView DataContext="{Binding Noise}" />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
