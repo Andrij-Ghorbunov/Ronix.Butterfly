@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Ronix.Butterfly.Wpf.Views
@@ -104,6 +105,7 @@ namespace Ronix.Butterfly.Wpf.Views
 
         public ICommand Browse { get; }
 
+        public ICommand Merge { get; }
 
         private readonly Command _append;
 
@@ -139,6 +141,7 @@ namespace Ronix.Butterfly.Wpf.Views
 
         public DatasetsVm()
         {
+            Merge = new Command(MergeCommand);
             Browse = new Command(BrowseCommand);
             _append = new Command(AppendCommand, AppendCommandPossible);
             WinnerVm = new SingleDatasetVm(this);
@@ -191,6 +194,31 @@ namespace Ronix.Butterfly.Wpf.Views
             DrawItemsCount = DatasetFile.Draws.Count;
             TotalItemsCount = WinningItemsCount + LosingItemsCount + DrawItemsCount;
             FileCountersText = $"The dataset file contains {TotalItemsCount} moves, including {WinningItemsCount} winning, {LosingItemsCount} losing, and {DrawItemsCount} draw.";
+        }
+
+        private void MergeCommand()
+        {
+            var dialog = new OpenFileDialog { DefaultExt = ".dts", AddExtension = true, Multiselect = true, InitialDirectory = _lastDirectory, Title = "Select all files to merge" };
+            if (dialog.ShowDialog() != true) return;
+            var fileNames = dialog.FileNames;
+            if (fileNames == null || fileNames.Length < 2)
+            {
+                MessageBox.Show("You have to select more than one .dts file!");
+                return;
+            }
+            var r = new DatasetFile();
+            foreach (var file in fileNames)
+            {
+                var dts = DatasetFile.Load(file);
+                r.Winning.AddRange(dts.Winning);
+                r.Losing.AddRange(dts.Losing);
+                r.Draws.AddRange(dts.Draws);
+            }
+
+            var dialog2 = new SaveFileDialog { DefaultExt = ".dts", AddExtension = true, CheckFileExists = false,
+                OverwritePrompt = true, InitialDirectory = _lastDirectory, Title = "Where to save the merged dataset" };
+            if (dialog2.ShowDialog() != true) return;
+            r.Save(dialog2.FileName);
         }
     }
 }
