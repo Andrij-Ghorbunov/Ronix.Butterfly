@@ -302,10 +302,14 @@ namespace Ronix.Neural
                     for (var synapse = 0; synapse < synapseCount; synapse++)
                     {
                         correction = connectomeCorrectionPart[synapse, neuron];
+                        if (double.IsNaN(correction))
+                            throw new Exception("Bad training");
                         connectomePart[synapse, neuron] += learningRate * correction;
                         connectomeCorrectionPart[synapse, neuron] = 0;
                     }
                     correction = biasCorrection[neuron];
+                    if (double.IsNaN(correction))
+                        throw new Exception("Bad training");
                     bias[neuron] += learningRate * correction;
                     biasCorrection[neuron] = 0;
                 }
