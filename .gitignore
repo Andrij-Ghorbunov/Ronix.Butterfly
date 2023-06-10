@@ -6,3 +6,4 @@ obj/
 *.userosscache
 *.sln.docstates
 .vs/
+Ronix.Butterfly.Wpf/AppSettings.json
