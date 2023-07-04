@@ -99,10 +99,15 @@
                 <CheckBox
                     Grid.Row="0"
                     Grid.Column="0"
-                    Grid.ColumnSpan="2"
                     Margin="3"
-                    Content="Save after each round"
+                    Content="Save after each Nth round"
                     IsChecked="{Binding SaveAfterEachRound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3"
+                    IsEnabled="{Binding SaveAfterEachRound}"
+                    Text="{Binding SaveRounds, Mode=TwoWay}" />
                 <Button
                     Grid.Row="2"
                     Grid.Column="0"

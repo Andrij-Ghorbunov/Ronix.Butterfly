@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -90,6 +91,8 @@ namespace Ronix.Butterfly.Wpf.Evolution
             }
         }
 
+        private int _roundIndex;
+
         /// <summary>
         /// Play a full round, then kill losers and replicate champions.
         /// </summary>
@@ -97,7 +100,20 @@ namespace Ronix.Butterfly.Wpf.Evolution
         {
             PlayFullRound();
             KillAndReplicate();
-            if (SaveAfterRound) Save();
+            if (SaveAfterRound
+                && (_roundIndex++ % SaveAfterRoundN == 0)) Save();
+        }
+
+
+        /// <summary>
+        /// Play a full round, then kill losers and replicate champions.
+        /// </summary>
+        public async Task GenerationAsync()
+        {
+            await PlayFullRoundAsync();
+            KillAndReplicate();
+            if (SaveAfterRound
+                && (_roundIndex++ % SaveAfterRoundN == 0)) Save();
         }
 
         /// <summary>
@@ -120,6 +136,32 @@ namespace Ronix.Butterfly.Wpf.Evolution
                     ReportRoundProgress(progressStepCount * progressStep);
                 }
             }
+        }
+
+        /// <summary>
+        /// Play two games between each pair of participants (one for white and one for black pieces).
+        /// </summary>
+        public async Task PlayFullRoundAsync()
+        {
+            var count = Participants.Count;
+            var totalNumberOfIterationsInRound = count * (count - 1) / 2; // Gauss sum 1+2+3+...+(count-1)
+            var progressStep = 1d / totalNumberOfIterationsInRound; // used for reporting progress
+            var progressStepCount = 0;
+            _rules = Rules();
+            _progress = 0;
+            _progressCoefficient = 1d / (count * (count - 1));
+            var tasks = new List<Task>(count * (count - 1));
+            for (var x = 0; x < count; x++)
+            {
+                for (var y = x + 1; y < count; y++)
+                {
+                    var p1 = Participants[x];
+                    var p2 = Participants[y];
+                    tasks.Add(PlayAsync(p1, p2));
+                    tasks.Add(PlayAsync(p2, p1));
+                }
+            }
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -175,6 +217,31 @@ namespace Ronix.Butterfly.Wpf.Evolution
             p2.Score += p2score;
         }
 
+        private int _progress;
+
+        private double _progressCoefficient;
+
+        private object _progressLock = new object();
+
+        private async Task PlayAsync(Participant p1, Participant p2)
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                var score = NeuralHelper.ContestTwoNetworks(p1.Network, p2.Network);
+                _rules.GetScores(score, out var p1score, out var p2score);
+                lock (_progressLock)
+                {
+                    _progress++;
+                    ReportRoundProgress(_progress * _progressCoefficient);
+                }
+                Application.Current.Dispatcher.BeginInvoke(() =>
+                {
+                    p1.Score += p1score;
+                    p2.Score += p2score;
+                });
+            });
+        }
+
         private void ReportRoundProgress(double progress)
         {
             ProgressReport?.Invoke(progress);
@@ -216,6 +283,8 @@ namespace Ronix.Butterfly.Wpf.Evolution
         #region Save and load
 
         public bool SaveAfterRound = true;
+
+        public int SaveAfterRoundN = 1;
 
         public string DirectoryPath;
 

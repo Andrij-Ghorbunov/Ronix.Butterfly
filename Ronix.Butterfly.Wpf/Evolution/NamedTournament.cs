@@ -144,7 +144,7 @@ namespace Ronix.Butterfly.Wpf.Evolution
             _scores.Add(score2);
 
             _scoreTable[x, y] = score1;
-            _scoreTable[y, x] = -score2;
+            _scoreTable[y, x] = score2;
         }
 
         private void ReportRoundProgress(double progress)

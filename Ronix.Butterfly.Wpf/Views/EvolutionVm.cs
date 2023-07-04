@@ -44,6 +44,14 @@ namespace Ronix.Butterfly.Wpf.Views
             set => SetValue(ref _saveAfterEachRound, value);
         }
 
+        private int _saveRounds = 1;
+
+        public int SaveRounds
+        {
+            get => _saveRounds;
+            set => SetValue(ref _saveRounds, value);
+        }
+
         private int _n = 5;
         
         public int N
@@ -167,7 +175,7 @@ namespace Ronix.Butterfly.Wpf.Views
             Evolution.Rules = rules;
         }
 
-        private bool CheckLoadded()
+        private bool CheckLoaded()
         {
             if (!string.IsNullOrEmpty(Evolution.DirectoryPath)) return true;
             MessageBox.Show("The tournament is not loaded!");
@@ -176,11 +184,12 @@ namespace Ronix.Butterfly.Wpf.Views
 
         private async void RunOneRoundCommand()
         {
-            if (!CheckLoadded()) return;
+            if (!CheckLoaded()) return;
             IsRunning = true;
             BeforeRunning();
             BeforeEachRound();
-            await Task.Factory.StartNew(Evolution.Generation);
+            //await Task.Factory.StartNew(Evolution.Generation);
+            await Evolution.GenerationAsync();
             AfterEachRound();
             IsRunning = false;
             AfterRunning();
@@ -188,16 +197,17 @@ namespace Ronix.Butterfly.Wpf.Views
 
         private async void RunNRoundsCommand()
         {
-            if (!CheckLoadded()) return;
+            if (!CheckLoaded()) return;
             IsRunning = true;
             BeforeRunning();
             var n = N;
-            await Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(async () =>
             {
                 while (n > 0 && !_stopRequested)
                 {
                     BeforeEachRound();
-                    Evolution.Generation();
+                    await Evolution.GenerationAsync();
+                    //Evolution.Generation();
                     n--;
                     AfterEachRound();
                 }
@@ -208,18 +218,18 @@ namespace Ronix.Butterfly.Wpf.Views
 
         private async void RunIndefinitelyCommand()
         {
-            if (!CheckLoadded()) return;
+            if (!CheckLoaded()) return;
             IsRunning = true;
             BeforeRunning();
-            await Task.Factory.StartNew(() =>
-            {
+            //await Task.Factory.StartNew(async () =>
+            //{
                 while (!_stopRequested)
                 {
                     BeforeEachRound();
-                    Evolution.Generation();
+                    await Evolution.GenerationAsync();
                     AfterEachRound();
                 }
-            });
+            //});
             AfterRunning();
             IsRunning = false;
         }
@@ -231,7 +241,7 @@ namespace Ronix.Butterfly.Wpf.Views
 
         private void SaveCommand()
         {
-            if (!CheckLoadded()) return;
+            if (!CheckLoaded()) return;
             Evolution.DirectoryPath = Path;
             Generators.Layers = LayersConstructor.GetLayers();
             Evolution.Save();
@@ -265,6 +275,7 @@ namespace Ronix.Butterfly.Wpf.Views
         {
             Macroparameters.Save(Evolution);
             Evolution.SaveAfterRound = SaveAfterEachRound;
+            Evolution.SaveAfterRoundN = SaveRounds;
             Generators.Layers = LayersConstructor.GetLayers();
             _stopRequested = false;
         }

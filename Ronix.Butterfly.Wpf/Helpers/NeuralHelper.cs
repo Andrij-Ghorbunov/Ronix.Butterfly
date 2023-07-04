@@ -133,42 +133,46 @@ namespace Ronix.Butterfly.Wpf.Helpers
             return maxSignalIndex;
         }
 
-        public static int ContestTwoNetworks(LayeredNeuralNetwork white, LayeredNeuralNetwork black)
+        public static int ContestTwoNetworks(LayeredNeuralNetwork white, LayeredNeuralNetwork black, bool isParallel = true)
         {
-            GameInstance.Reset();
-            while (!GameInstance.CheckIfGameEnded())
+            var gameInstance = isParallel ? new ButterflyGame() : GameInstance;
+            if (!isParallel)
+                gameInstance.Reset();
+            while (!gameInstance.CheckIfGameEnded())
             {
-                var move = Move(GameInstance, white);
-                GameInstance.Move(move);
-                if (GameInstance.CheckIfGameEnded()) break;
-                move = Move(GameInstance, black);
-                GameInstance.Move(move);
+                var move = Move(gameInstance, white);
+                gameInstance.Move(move);
+                if (gameInstance.CheckIfGameEnded()) break;
+                move = Move(gameInstance, black);
+                gameInstance.Move(move);
             }
-            return GameInstance.CheckWinner();
+            return gameInstance.CheckWinner();
         }
 
-        public static int ContestNetworkAndRandom(LayeredNeuralNetwork network, RandomPlayer random)
+        public static int ContestNetworkAndRandom(LayeredNeuralNetwork network, RandomPlayer random, bool isParallel = false)
         {
-            GameInstance.Reset();
-            while (!GameInstance.CheckIfGameEnded())
+            var gameInstance = isParallel ? new ButterflyGame() : GameInstance;
+            if (!isParallel)
+                gameInstance.Reset();
+            while (!gameInstance.CheckIfGameEnded())
             {
-                var move = Move(GameInstance, network);
-                GameInstance.Move(move);
-                if (GameInstance.CheckIfGameEnded()) break;
-                move = random.Move(GameInstance);
-                GameInstance.Move(move);
+                var move = Move(gameInstance, network);
+                gameInstance.Move(move);
+                if (gameInstance.CheckIfGameEnded()) break;
+                move = random.Move(gameInstance);
+                gameInstance.Move(move);
             }
-            var winnerWhite = GameInstance.CheckWinner();
-            GameInstance.Reset();
-            while (!GameInstance.CheckIfGameEnded())
+            var winnerWhite = gameInstance.CheckWinner();
+            gameInstance.Reset();
+            while (!gameInstance.CheckIfGameEnded())
             {
-                var move = random.Move(GameInstance);
-                GameInstance.Move(move);
-                if (GameInstance.CheckIfGameEnded()) break;
-                move = Move(GameInstance, network);
-                GameInstance.Move(move);
+                var move = random.Move(gameInstance);
+                gameInstance.Move(move);
+                if (gameInstance.CheckIfGameEnded()) break;
+                move = Move(gameInstance, network);
+                gameInstance.Move(move);
             }
-            var winnerBlack = GameInstance.CheckWinner();
+            var winnerBlack = gameInstance.CheckWinner();
             return Math.Sign(winnerWhite) - Math.Sign(winnerBlack);
         }
 
